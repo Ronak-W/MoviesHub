@@ -1,9 +1,9 @@
 // MovieDetails.js
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addToWatchLater, removeFromWatchLater } from './redux/action';
-import { watchLaterReducer } from './redux/reducer';
+import { addToWatchLater, removeFromWatchLater } from '../redux/action';
+import { watchLaterReducer } from '../redux/reducer';
 import { useSelector } from 'react-redux';
 
 const MovieDetails = ({ route }) => {
@@ -21,7 +21,7 @@ const MovieDetails = ({ route }) => {
 
   const dispatch = useDispatch();
 
-  const watchLaterMovies = useSelector((state) => state.watchLaterReducer)
+  const watchLaterMovies = useSelector((state) => state.watchLater)
 
   useEffect(() => {
     const isMovieInWatchLater = watchLaterMovies.some((movie) => movie.id === route.params.id);
@@ -37,47 +37,45 @@ const MovieDetails = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={{ uri: poster_path }}
-        style={styles.posterImage}
-        resizeMode="cover"
-      />
+    <ScrollView style={{ flex: 1, backgroundColor: 'black' }}>
+      <View >
+        <Image
+          source={{ uri: poster_path }}
+          style={styles.posterImage}
+          resizeMode="cover"
+        />
 
-      <View style={styles.detailsContainer}>
-        <Text style={styles.titleText}>Title: {original_title}</Text>
-        <Text style={styles.text}>Release Date: {release_date}</Text>
-        <Text style={styles.text}>Language: {original_language}</Text>
-        <Text style={styles.text}>Rating: {vote_average}</Text>
-        <Text style={styles.overviewText}>{overview}</Text>
-      </View>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.titleText}>Title: {original_title}</Text>
+          <Text style={styles.text}>Release Date: {release_date}</Text>
+          <Text style={styles.text}>Language: {original_language}</Text>
+          <Text style={styles.text}>Rating: {vote_average}</Text>
+          <Text style={styles.overviewText}>{overview}</Text>
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.watchNowButton}>
-          <Text style={styles.buttonText}>Watch Now</Text>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.7} style={styles.downloadButton} >
-          <Text style={styles.buttonText} >Download</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity activeOpacity={0.8} style={styles.watchNowButton}>
+            <Text style={styles.buttonText}>Watch Now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.7} style={styles.downloadButton} >
+            <Text style={styles.buttonText} >Download</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View>
-        <TouchableOpacity activeOpacity={0.8} style={styles.watchLaterContainer}>
-          <Text style={styles.watchLaterButton} onPress={() => handleWatchLater()}>
-            {isWatchLater ? "Remove from Watch Later" : "Watch Later"}
-          </Text>
-          <Text style={styles.watchLateDescription}>{ } Save the movie to watch later whenever you want</Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity activeOpacity={0.8} style={styles.watchLaterContainer}>
+            <Text style={styles.watchLaterButton} onPress={() => handleWatchLater()}>
+              {isWatchLater ? "Remove from Watch Later" : "Watch Later"}
+            </Text>
+            <Text style={styles.watchLateDescription}>{ } Save the movie to watch later whenever you want</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
   detailsContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,

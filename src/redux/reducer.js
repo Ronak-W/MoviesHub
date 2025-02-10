@@ -4,7 +4,7 @@ const initialState = {
     user : null
 };
 
-export const reducer = (state = initialState, action) =>{
+export const userReducer = (state = initialState, action) =>{
     switch(action.type){
         case ADD_USER:
             return {
@@ -16,7 +16,7 @@ export const reducer = (state = initialState, action) =>{
     }
 }
 
-export const watchLaterInitialState = [];
+const watchLaterInitialState = [];
 
 export const watchLaterReducer = (state = watchLaterInitialState, action) =>{
     switch(action.type){
@@ -29,6 +29,6 @@ export const watchLaterReducer = (state = watchLaterInitialState, action) =>{
             return state.filter((movie) => movie.id !== action.payload.id);
             
         default :
-            return watchLaterInitialState
+            return state;
     }
 }

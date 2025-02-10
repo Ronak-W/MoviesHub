@@ -2,60 +2,92 @@ import { Image, StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput } 
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/core';
 
 
 const Home = ({ navigation }) => {
-  const [movies, setMovies] = useState([]);
-  const [serchText, setSearchText] = useState("");
-  const [filteredMovies, setFilteredMovies] = useState([]);
+  const [movies, setMovies] = useState([]); //storing fetched movies
+  const [serchText, setSearchText] = useState(""); //user search input text
+  const [filteredMovies, setFilteredMovies] = useState([]); //array to store the searched movies
+  const [debounce, setDebounce] = useState("");
 
-  const isFocused = useIsFocused();
 
   const fetchMovies = async () => {
     try {
       const movieData = await axios.get('https://jsonfakery.com/movies/simple-paginate');
       setMovies(movieData.data.data);
+      // if (movieData) return true;
     } catch (error) {
       console.log('Could not fetch the data', error);
+      // return false;
     }
   };
 
+  //To set the debounce timer
   useEffect(() => {
-    fetchMovies();
-    // const unSubscribe = fetchMovies();
-    // return unSubscribe;
-  }, []);
+    const timer = setTimeout(() => {
+      setDebounce(serchText);
+    }, 300)
+
+    return (() => clearTimeout(timer))
+
+  }, [serchText])
+
+
+  // useEffect(() => {
+  //   fetchMovies();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetch = fetchMovies();
+
+      return () => {
+        return fetch();
+      }
+    }, []),
+  )
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const somethingEvent = e => {
+  //       console.log(e);
+  //     };
+  //     const subscription = something('initialization of something', somethingEvent);
+
+  //     return () => {
+  //       subscription();
+  //     };
+  //   }, []), // mention your dependency here
+  // );
+
+
 
   const breakText = (text) => {
     let result = '';
     let tempText = text;
 
-    while (tempText.length > 20 && tempText.length < 30) {
+    while (tempText.length > 20) {
       result += tempText.slice(0, 20) + '\n';
       tempText = tempText.slice(20);
-    }
-
-    if (tempText.length > 30) {
-      result += tempText.slice(0, 20) + '...';
-      return result;
     }
 
     result += tempText;
     return result;
   };
 
-  const handleSearch = (text) => {
-    setSearchText(text);
-
-    const filtered = movies.filter((movie) => {
-      const titleMatch = movie.original_title.toLowerCase().includes(text.toLowerCase());
-      const yearMatch = movie.release_date.includes(text);
-      return titleMatch || yearMatch;
-    });
-
-    setFilteredMovies(filtered);
-  }
+  useEffect(() => {
+    if (debounce) {
+      const filtered = movies.filter((movie) => {
+        const titleMatch = movie.original_title.toLowerCase().includes(debounce.toLowerCase());
+        const yearMatch = movie.release_date.includes(debounce);
+        return titleMatch || yearMatch;
+      });
+      setFilteredMovies(filtered)
+    } else {
+      setFilteredMovies([]);
+    }
+  }, [debounce])
 
 
   return (
@@ -69,7 +101,7 @@ const Home = ({ navigation }) => {
           placeholder='Movies/date'
           placeholderTextColor='white'
           value={serchText}
-          onChangeText={(text) => handleSearch(text)}
+          onChangeText={(text) => setSearchText(text)}
         />
       </View>
 

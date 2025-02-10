@@ -4,7 +4,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import Signup from './Signup'
 import BottomTab from './BottomTab'
-import { addUser } from './redux/action'
+import { addUser } from '../redux/action'
 import { useDispatch } from 'react-redux'
 
 const Login = ({ navigation }) => {
